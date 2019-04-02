@@ -33,14 +33,20 @@ Atente à familia que será usada na disciplina:
 
 ¹ Assume-se que há um entendimento básico de comandos no terminal. Qualquer dúvida, entrar em contato com o monitor.
 
-² mfrata: Instalei no Ubuntu 18.10: 
-Precisei rodar o seguinte comando antes de executar o instalador:
+² mfrata: Instalei no Ubuntu 18.10:
+Comando antes de executar o instalador, caso o instalador acuse erro de bibliotecas faltantes:
 
 `sudo apt-get install libgtk2.0-0 libncurses5`
 
-A interface gráfica travou no fim da instalação, porém a mesma foi concluída com sucesso. Também precisei instalar o compilador da arm:
+A interface gráfica travou no fim da instalação, porém a mesma foi concluída com sucesso. 
 
-`sudo apt-get install gcc-arm-none-eabi`
+Encontrei os seguintes erros:
+* `arm-none-eabi-gcc: Command not found`
+
+* `Typemake: srec_cat: Command not found`
+
+Para consertar, é só rodar o seguinte:
+`sudo apt-get install gcc-arm-none-eabi srecord`
 
 ### 2 Git
 

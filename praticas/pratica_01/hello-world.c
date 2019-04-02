@@ -12,7 +12,8 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
   /* Insira o codigo aqui */
 
-  
+  printf("Uma frase bem grande...\n");
+
   /************************/
 
   PROCESS_END();

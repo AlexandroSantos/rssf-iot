@@ -1,7 +1,7 @@
 TARGET = srf06-cc26xx
 BOARD = launchpad/cc1350
 
-CONTIKI_PROJECT = 
+CONTIKI_PROJECT = read-adc
 
 all: $(CONTIKI_PROJECT)
 

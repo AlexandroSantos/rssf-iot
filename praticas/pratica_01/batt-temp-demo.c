@@ -82,6 +82,7 @@
 #include "dev/leds.h"
 #include "dev/watchdog.h"
 #include "random.h"
+#include "dev/adc-sensor.h"
 #include "button-sensor.h"
 #include "batmon-sensor.h"
 #include "board-peripherals.h"
@@ -125,6 +126,10 @@ get_sync_sensor_readings(void)
   value = batmon_sensor.value(BATMON_SENSOR_TYPE_VOLT);
   printf("Bat: Volt=%d mV\r\n", (value * 125) >> 5);
 
+  value = adc_sensor.value(ADC_SENSOR_VALUE);
+  printf("ADC: Volt=%d mV\r\n", value);
+
+
   return;
 }
 /*---------------------------------------------------------------------------*/
@@ -140,6 +145,7 @@ PROCESS_THREAD(cc26xx_demo_process, ev, data)
   printf("Pratica_01: Battery-demo\r\n");
 
   SENSORS_ACTIVATE(batmon_sensor);
+  SENSORS_ACTIVATE(adc_sensor);
 
   etimer_set(&et, SENSOR_READING_PERIOD);
   get_sync_sensor_readings();

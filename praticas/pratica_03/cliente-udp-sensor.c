@@ -52,6 +52,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
 
   /********** CONECTANDO AO SERVIDOR UDP **********/
   // Encontrar endereço IPv6 do servidor
+<<<<<<< HEAD
 //  static resolv_status_t status = RESOLV_STATUS_UNCACHED;
 //  while(status != RESOLV_STATUS_CACHED)
 //  {
@@ -67,6 +68,14 @@ PROCESS_THREAD(udp_client_process, ev, data)
 //          PROCESS_WAIT_EVENT();
 //      }
 //  }
+=======
+  static resolv_status_t status = RESOLV_STATUS_UNCACHED;
+  while(status != RESOLV_STATUS_CACHED)
+  {
+      status = set_connection_address(&ipaddr, UDP_CONNECTION_ADDR);
+      PROCESS_WAIT_EVENT();
+  }
+>>>>>>> 164c0fd9bb695c74a947e8aff7647cd57a93b6aa
   // Se não utilizar mDNS, use a linha abaixo para registrar IPv6 destino
    uip_ip6addr(&ipaddr, 0xfd00, 0, 0, 0, 0x212, 0x4b00, 0x1376, 0x4e03);
 

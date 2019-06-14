@@ -27,6 +27,8 @@ PROCESS(adc_process_sensor, "adc driver process");
 AUTOSTART_PROCESSES( &adc_process_sensor);
 /*---------------------------------------------------------------------------*/
 
+
+
 PROCESS_THREAD(adc_process_sensor, ev, data)
 {
   static struct sensors_sensor *sensor;
@@ -50,7 +52,7 @@ PROCESS_THREAD(adc_process_sensor, ev, data)
           sane = rv /1000000;
           dec = sane;
           frac = ((float)rv /1000000 - dec)*100;
-          printf("ADC=%d.%02u V (%d)\n", dec, frac, rv);
+          printf("Tender ADC=%d.%02u V (%d)\n", dec, frac, rv);
       }
       else
       {

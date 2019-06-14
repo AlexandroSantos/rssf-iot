@@ -5,26 +5,33 @@
 #include "utils.h"
 #include "sensor-timer.h"
 #include <dev/leds.h>
+#include <gpio.h>
+#include "ti-lib.h"
 
 #define SEND_INTERVAL		(5 * CLOCK_SECOND)
-
 static struct etimer et;
 static struct uip_udp_conn *client_conn;
 static uip_ipaddr_t ipaddr;
-
 static void udp_handler(void);
 static void send_packet(void);
+static void gpioButtonFxn0(uint_least8_t index);
 
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_client_process, "Processo UDP cliente");
-
 /*---------------------------------------------------------------------------*/
-AUTOSTART_PROCESSES(&resolv_process, &udp_client_process, &sensor_process);
-
+AUTOSTART_PROCESSES(&udp_client_process);
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_client_process, ev, data)
 {
+
   PROCESS_BEGIN();
+          // enable output for the red LED
+            GPIO_setOutputEnableDio(IOID_14, GPIO_OUTPUT_ENABLE);
+            GPIO_setOutputEnableDio(IOID_13, GPIO_OUTPUT_DISABLE);
+            // turn on the red LED
+            GPIO_setDio(IOID_14);
+
+            GPIO_setCallback(IOID_13, gpioButtonFxn0);
 
   printf("Processo UDP cliente -- iniciou\r\n");
 
@@ -42,17 +49,15 @@ PROCESS_THREAD(udp_client_process, ev, data)
   // Imprime IPv6.
   print_local_addresses();
 
-
   // Configura nome local (mDNS).
   char contiki_hostname[16];
   sprintf(contiki_hostname,"sensor %02X%02X",linkaddr_node_addr.u8[6], linkaddr_node_addr.u8[7]);
   resolv_set_hostname(contiki_hostname);
   printf("Configurando hostname para %s\r\n",contiki_hostname);
 
-
   /********** CONECTANDO AO SERVIDOR UDP **********/
   // Encontrar endereço IPv6 do servidor
-//<<<<<<< HEAD
+
   static resolv_status_t status = RESOLV_STATUS_UNCACHED;
   while(status != RESOLV_STATUS_CACHED)
   {
@@ -68,16 +73,6 @@ PROCESS_THREAD(udp_client_process, ev, data)
           PROCESS_WAIT_EVENT();
       }
   }
-//=======
-  //static resolv_status_t status = RESOLV_STATUS_UNCACHED;
-  //while(status != RESOLV_STATUS_CACHED)
-  //{
-   //   status = set_connection_address(&ipaddr, UDP_CONNECTION_ADDR);
-   //   PROCESS_WAIT_EVENT();
-  //}
-//>>>>>>> 164c0fd9bb695c74a947e8aff7647cd57a93b6aa
-  // Se não utilizar mDNS, use a linha abaixo para registrar IPv6 destino
-   //uip_ip6addr(&ipaddr, 0xfd00, 0, 0, 0, 0x212, 0x4b00, 0x1376, 0x4e03);
 
   // Criando socket UDP para conexão com host:porta remoto
   client_conn = udp_new(&ipaddr, UIP_HTONS(CONN_PORT), NULL);
@@ -97,6 +92,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
   {
     PROCESS_YIELD();
     // PROCESS_WAIT_EVENT();
+
     if(etimer_expired(&et))
     {
       send_packet();
@@ -107,10 +103,8 @@ PROCESS_THREAD(udp_client_process, ev, data)
       udp_handler();
     }
   }
-
   PROCESS_END();
 }
-
 
 /*------------------FUNÇÕES AUXILIARES---------------------------------------*/
 static void send_packet(void)
@@ -141,3 +135,8 @@ static void udp_handler(void)
     }
 }
 /*---------------------------------------------------------------------------*/
+static void gpioButtonFxn0(uint_least8_t index)
+  {
+      /* Clear the GPIO interrupt and decrement threshold */
+    ti_lib_gpio_toggle_dio(IOID_14);
+  }
